@@ -1,48 +1,39 @@
-<h1 align="center">rawdns 📡  </h1>
+# rawdns
 
-<h5 align="center">DNS messages (un)marshaller and UDP client</h5>
+DNS messages (un)marshaller
 
-<br/>
+## Overview
 
-### Overview
+This project is forked from [cirocosta/rawdns](https://github.com/cirocosta/rawdns) and has been modified to make it more suitable for constructing and parsing the UDP packet of DNS.
 
-`rawdns` a small DNS client library that performs A records queries against a given nameserver. 
+For complete DNS functionality, see [miekg/dns](https://github.com/miekg/dns).
 
-It relies only on `net` to perform the UDP queries, constructing and parsing all the messages in transit manually.
-
-This is a project that is **not** intended to be used in production **at all**. It's not as efficient as it should and does not handle all the cases you'd expect from a production-ready library.
-
-For real use, see [miekg/dns](https://github.com/miekg/dns).
-
-
-### Usage
-
-CLI:
-
-```sh
-rawdns example.com
-msg sent labels=[example com]
-&{ID:0 QR:1 Opcode:0 AA:0 TC:0 RD:1 RA:1 Z:0 RCODE:0 QDCOUNT:1 ANCOUNT:1 NSCOUNT:0 ARCOUNT:0}
-ANSWER: [93 184 216 34]
-```
-
-Programatically:
+## Example
 
 ```go
-import "github.com/cirocosta/rawdns/lib"
+package main
 
-client, err := lib.NewClient(lib.ClientConfig{
-        Address: "8.8.8.8:53",
-})
-must(err)
-defer client.Close()
+import (
+	"github.com/0x2E/rawdns"
+	"net"
+)
 
-ips, err := client.LookupAddr("example.com")
-must(err)
+func main() {
+	// create socket
+	conn, _ := net.Dial("udp", "8.8.8.8:53")
+	defer conn.Close()
 
-for _, ip := range ips {
-        fmt.Println(ip)
+	// construct DNS packet content
+	payload, _ := rawdns.Marshal(33, 1, "github.com", rawdns.QTypeA)
+
+	// send UDP packet
+	_, _ = conn.Write(payload)
+
+	// receive UDP packet
+	buf := make([]byte, 0, 1024)
+	n, _ := conn.Read(buf)
+
+	// parse
+	resp, _ := rawdns.Unmarshal(buf[:n])
 }
 ```
-
-

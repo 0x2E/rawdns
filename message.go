@@ -1,7 +1,6 @@
-package lib
+package rawdns
 
 import (
-	"fmt"
 	"github.com/pkg/errors"
 )
 
@@ -74,7 +73,7 @@ func UnmarshalMessage(msg []byte, m *Message) (err error) {
 
 	bytesRead += n
 
-	fmt.Printf("%+v\n", header)
+	//fmt.Printf("%+v\n", header)
 
 	questions = make([]*Question, header.QDCOUNT)
 	for ndx, _ = range questions {

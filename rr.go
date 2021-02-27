@@ -1,4 +1,4 @@
-package lib
+package rawdns
 
 import (
 	"github.com/pkg/errors"

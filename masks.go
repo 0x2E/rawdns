@@ -1,4 +1,4 @@
-package lib
+package rawdns
 
 // masks is a map of bit masks in the form
 // of a slice where each entry retrieves a
